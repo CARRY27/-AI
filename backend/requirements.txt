@@ -1,7 +1,7 @@
 # ========== Web 框架 ==========
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-python-multipart==0.0.6
+python-multipart==0.0.20
 websockets==12.0
 
 # ========== 数据库 ==========
@@ -49,7 +49,7 @@ markdown==3.5.1
 # ========== 认证 ==========
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart==0.0.20
 pydantic[email]==2.5.0
 
 # ========== 工具库 ==========
