@@ -1,137 +1,73 @@
 # Security Policy
 
-## 🔒 Supported Versions
-
-We actively support the following versions with security updates:
+## Supported Versions
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 1.x.x   | :white_check_mark: |
 
-## 🚨 Reporting a Vulnerability
+## Reporting a Vulnerability
 
-We take security vulnerabilities seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of DocAgent seriously. If you believe you have found a security vulnerability, please report it to us as described below.
 
-### 1. **Do NOT** create a public GitHub issue
+### How to Report
 
-Security vulnerabilities should be reported privately to protect users.
+**Please do not report security vulnerabilities through public GitHub issues.**
 
-### 2. Report via Email
+Instead, please send an email to [carry27@example.com](mailto:carry27@example.com) with the following information:
 
-Please email security concerns to: **security@example.com**
+- Type of issue (e.g., buffer overflow, SQL injection, cross-site scripting, etc.)
+- Full paths of source file(s) related to the manifestation of the issue
+- The location of the affected source code (tag/branch/commit or direct URL)
+- Any special configuration required to reproduce the issue
+- Step-by-step instructions to reproduce the issue
+- Proof-of-concept or exploit code (if possible)
+- Impact of the issue, including how an attacker might exploit it
 
-Include the following information:
-- Type of vulnerability
-- Affected components
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if any)
-
-### 3. Response Timeline
+### Response Timeline
 
 - **Initial Response**: Within 48 hours
 - **Status Update**: Within 7 days
-- **Fix Timeline**: Depends on severity
+- **Fix Timeline**: Depends on severity (Critical: 7 days, High: 14 days, Medium: 30 days)
 
-### 4. Severity Levels
+### Disclosure Policy
 
-- **Critical**: Remote code execution, authentication bypass, data breach
-- **High**: Privilege escalation, sensitive data exposure
-- **Medium**: Information disclosure, denial of service
-- **Low**: Minor security improvements
+- We will confirm receipt of your vulnerability report
+- We will investigate and validate the issue
+- We will work on a fix and release timeline
+- We will notify you when the issue is fixed
+- We will publicly acknowledge your responsible disclosure (unless you prefer to remain anonymous)
 
-## 🛡️ Security Best Practices
+## Security Best Practices for Deployment
 
-### For Users
+### Environment Variables
 
-1. **Keep Dependencies Updated**
-   ```bash
-   pip install --upgrade -r requirements.txt
-   npm update
-   ```
+- Never commit `.env` files with real credentials
+- Use strong, unique passwords for all services
+- Rotate API keys regularly
 
-2. **Use Strong Passwords**
-   - Minimum 12 characters
-   - Mix of letters, numbers, and symbols
-   - Unique passwords for each service
+### Database Security
 
-3. **Secure API Keys**
-   - Never commit API keys to version control
-   - Use environment variables
-   - Rotate keys regularly
+- Use encrypted connections (SSL/TLS)
+- Implement proper access controls
+- Regular backups with encryption
 
-4. **Enable HTTPS**
-   - Use TLS/SSL in production
-   - Configure proper certificates
+### Network Security
 
-5. **Regular Backups**
-   - Backup database regularly
-   - Store backups securely
+- Deploy behind a reverse proxy (nginx/traefik)
+- Enable HTTPS with valid certificates
+- Implement rate limiting
+- Use firewall rules to restrict access
 
-6. **Network Security**
-   - Use firewall rules
-   - Restrict database access
-   - Use VPN for remote access
+### Application Security
 
-### For Developers
+- Keep all dependencies updated
+- Review Dependabot alerts regularly
+- Enable audit logging
+- Implement proper authentication and authorization
 
-1. **Input Validation**
-   - Validate all user inputs
-   - Sanitize file uploads
-   - Use parameterized queries
+## Acknowledgments
 
-2. **Authentication & Authorization**
-   - Use JWT with proper expiration
-   - Implement role-based access control
-   - Validate permissions on every request
+We appreciate the security research community and will acknowledge researchers who responsibly disclose vulnerabilities.
 
-3. **Sensitive Data**
-   - Encrypt sensitive data at rest
-   - Use HTTPS for data in transit
-   - Never log sensitive information
-
-4. **Dependencies**
-   - Regularly update dependencies
-   - Check for known vulnerabilities
-   - Use `pip-audit` or `npm audit`
-
-5. **Code Review**
-   - Review all security-sensitive code
-   - Use static analysis tools
-   - Follow secure coding practices
-
-## 🔍 Security Checklist
-
-Before deploying to production:
-
-- [ ] All dependencies are up to date
-- [ ] Environment variables are properly configured
-- [ ] API keys are stored securely
-- [ ] Database credentials are strong
-- [ ] HTTPS is enabled
-- [ ] Firewall rules are configured
-- [ ] Logging is configured (without sensitive data)
-- [ ] Backup strategy is in place
-- [ ] Error messages don't expose sensitive information
-- [ ] Rate limiting is enabled
-- [ ] CORS is properly configured
-- [ ] SQL injection prevention is in place
-- [ ] XSS protection is enabled
-- [ ] CSRF protection is enabled
-
-## 📚 Security Resources
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [FastAPI Security](https://fastapi.tiangolo.com/tutorial/security/)
-- [Vue.js Security](https://vuejs.org/guide/best-practices/security.html)
-- [Python Security](https://python.readthedocs.io/en/stable/library/security.html)
-
-## 🏆 Security Acknowledgments
-
-We appreciate responsible disclosure. Security researchers who report vulnerabilities will be acknowledged (with permission) in our security acknowledgments.
-
----
-
-**Last Updated**: 2024
-
+Thank you for helping keep DocAgent and our users safe!

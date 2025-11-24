@@ -10,6 +10,11 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
+[![GitHub stars](https://img.shields.io/github/stars/CARRY27/-AI?style=social)](https://github.com/CARRY27/-AI/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/CARRY27/-AI?style=social)](https://github.com/CARRY27/-AI/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/CARRY27/-AI)](https://github.com/CARRY27/-AI/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/CARRY27/-AI)](https://github.com/CARRY27/-AI/commits)
+
 [English](#-docagent) | [中文](#-docagent-中文)
 
 **Let AI read all your enterprise documents and answer questions like a senior employee**
