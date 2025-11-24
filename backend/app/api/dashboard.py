@@ -533,7 +533,10 @@ async def get_system_health(
 
 @router.get("/export-stats")
 async def export_dashboard_stats(
-    format: str = Query(default="json", regex="^(json|csv)$"),
+    format: str = Query(
+        default="json",
+        pattern="^(json|csv)$"
+    ),
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):

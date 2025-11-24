@@ -152,6 +152,34 @@ async def get_conversation(
     }
 
 
+# 新增：获取指定对话的消息列表，供前端加载使用
+@router.get("/{conversation_id}/messages", response_model=List[MessageResponse])
+async def list_messages(
+    conversation_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """获取某个对话的消息列表"""
+    # 验证对话归属
+    result = await db.execute(
+        select(Conversation).where(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        )
+    )
+    conversation = result.scalar_one_or_none()
+    if not conversation:
+        raise HTTPException(status_code=404, detail="对话不存在")
+
+    result = await db.execute(
+        select(Message).where(
+            Message.conversation_id == conversation_id
+        ).order_by(Message.created_at)
+    )
+    messages = result.scalars().all()
+    return messages
+
+
 @router.post("/{conversation_id}/messages", response_model=QueryResponse)
 async def send_message(
     conversation_id: int,

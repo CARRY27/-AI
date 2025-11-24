@@ -69,4 +69,59 @@ docker-compose.override.yml
 
 # OS
 Thumbs.db
+.DS_Store
+*.swp
+*.swo
+*~
 
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.coverage.*
+*.cover
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Secrets
+*.pem
+*.key
+secrets/
+.secrets
+
+# IDE - Additional
+*.sublime-project
+*.sublime-workspace
+.vscode/
+.idea/
+*.iml
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build artifacts
+*.whl
+*.tar.gz
+
+# Local configuration
+.env.local
+.env.*.local
+config.local.json

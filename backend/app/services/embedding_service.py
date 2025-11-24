@@ -16,6 +16,13 @@ class EmbeddingService:
         self.model = settings.EMBEDDING_MODEL
         self.dimension = settings.EMBEDDING_DIMENSION
         self.batch_size = settings.EMBEDDING_BATCH_SIZE
+
+        # 如果配置为 openai 但未提供 API Key，则自动回退到本地模型
+        if self.provider == "openai" and not settings.OPENAI_API_KEY:
+            print("⚠️ 未检测到 OPENAI_API_KEY，Embedding 将回退为本地模型 (sentence-transformers)")
+            self.provider = "local"
+            # 选择一个轻量通用的本地模型名称
+            self.model = "all-MiniLM-L6-v2"
         
         if self.provider == "openai":
             openai.api_key = settings.OPENAI_API_KEY
@@ -31,8 +38,9 @@ class EmbeddingService:
         
         if self.provider == "openai":
             return await self._embed_openai(texts)
-        else:
-            raise ValueError(f"不支持的 embedding 提供商: {self.provider}")
+        if self.provider == "local":
+            return await self._embed_local(texts)
+        raise ValueError(f"不支持的 embedding 提供商: {self.provider}")
     
     async def _embed_openai(self, texts: List[str]) -> List[List[float]]:
         """使用 OpenAI API 生成 embeddings"""

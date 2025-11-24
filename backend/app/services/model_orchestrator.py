@@ -95,8 +95,27 @@ class ModelOrchestrator:
                     self.models[task_type] = []
                 self.models[task_type].append(gpt4_config)
         
+        # 通义千问 - 中文优化
+        if settings.TONGYI_API_KEY:
+            tongyi_config = ModelConfig(
+                provider=ModelProvider.TONGYI,
+                model_name=settings.TONGYI_MODEL,
+                api_key=settings.TONGYI_API_KEY,
+                max_tokens=2000,
+                temperature=0.1,
+                priority=1,  # 设置为高优先级，优先使用通义千问
+                rate_limit_per_minute=60
+            )
+            
+            # 通义千问用于所有任务类型
+            for task_type in TaskType:
+                if task_type not in self.models:
+                    self.models[task_type] = []
+                # 插入到列表开头，使其优先于其他模型
+                self.models[task_type].insert(0, tongyi_config)
+        
         # 可以添加更多模型配置
-        # 例如：Claude for summarization, 通义千问 for Chinese, etc.
+        # 例如：Claude for summarization, etc.
     
     def register_model(self, task_type: TaskType, model_config: ModelConfig):
         """注册新模型"""
@@ -244,6 +263,14 @@ class ModelOrchestrator:
                         max_tokens=max_tokens or model_config.max_tokens
                     )
                     
+                elif model_config.provider == ModelProvider.TONGYI:
+                    result = await self._call_tongyi(
+                        model_config=model_config,
+                        messages=messages,
+                        temperature=temperature or model_config.temperature,
+                        max_tokens=max_tokens or model_config.max_tokens
+                    )
+                    
                 else:
                     raise Exception(f"不支持的模型提供商: {model_config.provider}")
                 
@@ -296,6 +323,15 @@ class ModelOrchestrator:
             
             if model_config.provider == ModelProvider.OPENAI:
                 async for chunk in self._stream_openai(
+                    model_config=model_config,
+                    messages=messages,
+                    temperature=temperature or model_config.temperature,
+                    max_tokens=max_tokens or model_config.max_tokens
+                ):
+                    yield chunk
+            
+            elif model_config.provider == ModelProvider.TONGYI:
+                async for chunk in self._stream_tongyi(
                     model_config=model_config,
                     messages=messages,
                     temperature=temperature or model_config.temperature,
@@ -426,6 +462,103 @@ class ModelOrchestrator:
             ) as response:
                 result = await response.json()
                 return result["message"]["content"]
+    
+    async def _call_tongyi(
+        self,
+        model_config: ModelConfig,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int
+    ) -> str:
+        """调用通义千问 API"""
+        
+        import dashscope
+        from dashscope import Generation
+        
+        # 设置 API Key
+        dashscope.api_key = model_config.api_key
+        
+        # 转换消息格式
+        tongyi_messages = [
+            {"role": msg["role"], "content": msg["content"]}
+            for msg in messages
+        ]
+        
+        # 定义同步调用函数
+        def _sync_call():
+            return Generation.call(
+                model=model_config.model_name,
+                messages=tongyi_messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                result_format='message'
+            )
+        
+        # 在异步上下文中调用同步函数
+        response = await asyncio.to_thread(_sync_call)
+        
+        if response.status_code == 200:
+            return response.output.choices[0].message.content
+        else:
+            raise Exception(f"通义千问 API 调用失败: {response.message}")
+    
+    async def _stream_tongyi(
+        self,
+        model_config: ModelConfig,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int
+    ) -> AsyncGenerator[str, None]:
+        """流式调用通义千问 API"""
+        
+        import dashscope
+        from dashscope import Generation
+        
+        # 设置 API Key
+        dashscope.api_key = model_config.api_key
+        
+        # 转换消息格式
+        tongyi_messages = [
+            {"role": msg["role"], "content": msg["content"]}
+            for msg in messages
+        ]
+        
+        # 定义同步流式调用函数，返回生成器
+        def _get_stream_generator():
+            return Generation.call(
+                model=model_config.model_name,
+                messages=tongyi_messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                result_format='message',
+                stream=True,
+                incremental_output=True
+            )
+        
+        # 在线程中获取生成器对象
+        responses = await asyncio.to_thread(_get_stream_generator)
+        
+        # 在循环中处理响应，每次迭代后让出控制权
+        for response in responses:
+            # 让出控制权，允许其他协程运行
+            await asyncio.sleep(0)
+            
+            if response.status_code == 200:
+                if hasattr(response.output, 'choices') and len(response.output.choices) > 0:
+                    choice = response.output.choices[0]
+                    # 检查是否有增量输出
+                    if hasattr(choice, 'delta') and hasattr(choice.delta, 'content'):
+                        content = choice.delta.content
+                        if content:
+                            yield content
+                    # 或者检查是否有完整消息（某些情况下）
+                    elif hasattr(choice, 'message') and hasattr(choice.message, 'content'):
+                        content = choice.message.content
+                        if content:
+                            yield content
+            else:
+                error_msg = getattr(response, 'message', '未知错误')
+                raise Exception(f"通义千问流式 API 调用失败: {error_msg}")
     
     def get_model_stats(self) -> Dict[str, Any]:
         """获取模型统计信息"""

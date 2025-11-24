@@ -82,7 +82,7 @@ class Settings(BaseSettings):
     MILVUS_COLLECTION: str = Field(default="docagent_vectors")
     
     # ========== LLM 配置 ==========
-    LLM_PROVIDER: str = Field(default="openai")  # openai, azure, ollama
+    LLM_PROVIDER: str = Field(default="openai")  # openai, azure, ollama, tongyi
     LLM_MODEL: str = Field(default="gpt-4o-mini")
     LLM_TEMPERATURE: float = Field(default=0.1)
     LLM_MAX_TOKENS: int = Field(default=2000)
@@ -99,6 +99,10 @@ class Settings(BaseSettings):
     # Ollama
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
     OLLAMA_MODEL: str = Field(default="llama2")
+    
+    # 通义千问 (Tongyi Qwen)
+    TONGYI_API_KEY: str = Field(default="")
+    TONGYI_MODEL: str = Field(default="qwen-turbo")  # qwen-turbo, qwen-plus, qwen-max
     
     # ========== Embedding 配置 ==========
     EMBEDDING_PROVIDER: str = Field(default="openai")

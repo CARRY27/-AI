@@ -39,7 +39,10 @@ class PromptTemplateCreate(BaseModel):
     """创建Prompt模板"""
     name: str = Field(..., min_length=1, max_length=100)
     description: Optional[str] = None
-    category: str = Field(..., regex="^(customer_service|legal|training|general|technical|sales)$")
+    category: str = Field(
+        ...,
+        pattern="^(customer_service|legal|training|general|technical|sales)$"
+    )
     
     system_prompt: str = Field(..., min_length=10)
     user_prompt_template: str = Field(..., min_length=10)
